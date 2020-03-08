@@ -1,0 +1,16 @@
+---
+title: ': A Wealth of Data'
+output: pdf_document
+Author: 
+---
+
+```{r}
+library(readr)
+
+setwd('~/Desktop/Problem_C_Data')
+
+hair_dryer <- read_tsv(file="hair_dryer.tsv")
+microwave <- read_tsv(file="microwave.tsv")
+pacifier <- read_tsv(file="pacifier.tsv")
+```
+Clea
