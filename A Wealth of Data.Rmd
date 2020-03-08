@@ -147,8 +147,15 @@ pacifier_scores = pacifier_scores %>% dplyr::select(-star_rating.x,-X1) %>% dply
 ```{r}
 names(hair_dryer_scores)
 ```
-
+compound
+compound > 0.5 == positive 
+-0.5< compound < 0.5 == neutural
+compound < -0.5 == negative
 ```{r}
+
+
+hair_dryer_scores %>% mutate(compound_factor== )
+
 
 ```
 
