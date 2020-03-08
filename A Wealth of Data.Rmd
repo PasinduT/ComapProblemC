@@ -3,6 +3,13 @@ title: ': A Wealth of Data'
 output: pdf_document
 Author: 
 ---
+```{r}
+library(tidyverse)
+library(stringr)
+```
+
+
+
 
 ```{r}
 library(readr)
@@ -13,4 +20,16 @@ hair_dryer <- read_tsv(file="hair_dryer.tsv")
 microwave <- read_tsv(file="microwave.tsv")
 pacifier <- read_tsv(file="pacifier.tsv")
 ```
-Clea
+Cleaning
+
+```{r}
+cleaned_hair_dryer= hair_dryer %>% filter(str_detect(tolower(product_title), "dryer"))
+cleaned_microwave= microwave %>% filter(str_detect(tolower(product_title), "microwave"))
+cleaned_pacifier= pacifier %>% filter(str_detect(tolower(product_title), "pacifier"))
+```
+
+```{r}
+cleaned_hair_dryer$product_title!=hair_dryer$product_title
+
+```
+
