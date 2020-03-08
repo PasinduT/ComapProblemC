@@ -6,6 +6,7 @@ Author:
 ```{r}
 library(tidyverse)
 library(stringr)
+library(lubridate)
 ```
 
 
@@ -29,7 +30,47 @@ cleaned_pacifier= pacifier %>% filter(str_detect(tolower(product_title), "pacifi
 ```
 
 ```{r}
-cleaned_hair_dryer$product_title!=hair_dryer$product_title
+write.csv(cleaned_hair_dryer,"cleaned_hair_dryer.csv")
+write.csv(cleaned_microwave,"cleaned_microwave.csv")
+write.csv(cleaned_pacifier,"cleaned_pacifier.csv")
+```
+
+product rating by time
+```{r}
+some = mdy(microwave$review_date)
+as_tibble(year(some), month(some), day(some))
+cleaned_microwave= cleaned_microwave %>% mutate(year= lubridate::year(mdy(review_date)),
+                     month= lubridate::month(mdy(review_date)),
+                     day=lubridate::day(mdy(review_date)))
+
+cleaned_hair_dryer= cleaned_hair_dryer %>% mutate(year= lubridate::year(mdy(review_date)),
+                     month= lubridate::month(mdy(review_date)),
+                     day=lubridate::day(mdy(review_date)))
+
+cleaned_pacifier= cleaned_pacifier %>% mutate(year= lubridate::year(mdy(review_date)),
+                     month= lubridate::month(mdy(review_date)),
+                     day=lubridate::day(mdy(review_date)))
 
 ```
+
+
+```{r}
+
+cleaned_microwave %>% filter(product_parent==423421857)%>% filter(year==2015) %>% filter(month==7)%>%  ggplot() +geom_point(mapping=aes(x=review_date,y= star_rating))
+
+
+geom_smooth(data=subset(copyKVClimate, year ==1950))+geom_smooth(data=subset(copyKVClimate, year == 2019))
+
+
+
+  cleaned_microwave %>% filter(product_parent==423421857)%>% filter(year==2015)   %>% ggplot()+ geom_histogram(mapping=aes(x=star_rating, fill=as.factor(monnth)),position="dodge",binwidth=0.7) + scale_fill_manual(breaks=1:12, values=c())
+  
+  
+  
+cleaned_microwave %>% filter(product_parent==423421857)%>% filter(year==2015) %>% ggplot(mapping=aes(x=month, y=star_rating, color=as.factor(month))) + geom_line()
+```
+ %>% ggplot(mapping=aes(x=month, y= count ), color=as.factor(star_rating))+ geom_line()
+ 
+ 
+ ggplot(copyKVClimate,aes( month, TMIN, color=as.factor(year)))+geom_smooth(data=subset(copyKVClimate, year ==1950))+geom_smooth(data=subset(copyKVClimate, year == 2019))+ggtitle("Minimum Temperatures by Month")+ylab("Minimum Temperature")+xlab("Month")
 
