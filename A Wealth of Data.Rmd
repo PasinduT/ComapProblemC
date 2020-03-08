@@ -67,10 +67,20 @@ geom_smooth(data=subset(copyKVClimate, year ==1950))+geom_smooth(data=subset(cop
   
   
   
-cleaned_microwave %>% filter(product_parent==423421857)%>% filter(year==2015) %>% ggplot(mapping=aes(x=month, y=star_rating, color=as.factor(month))) + geom_line()
+product1= cleaned_microwave %>% filter(product_parent==423421857)
+ggplot(data=product1, mapping=aes(x=as.factor(month),group=star_rating,  color=as.factor(star_rating))) + geom_line(stat="count")+geom_point(stat="count")+facet_wrap(product1$year)
 ```
  %>% ggplot(mapping=aes(x=month, y= count ), color=as.factor(star_rating))+ geom_line()
  
  
  ggplot(copyKVClimate,aes( month, TMIN, color=as.factor(year)))+geom_smooth(data=subset(copyKVClimate, year ==1950))+geom_smooth(data=subset(copyKVClimate, year == 2019))+ggtitle("Minimum Temperatures by Month")+ylab("Minimum Temperature")+xlab("Month")
+
+```{r}
+clean_hair_dryer_scores <- read_csv("clean_hair_dryer_scores.csv")
+clean_microwave_scores <- read_csv("clean_microwave_scores.csv")
+clean_pacifier_scores <- read_csv("clean_pacifier_scores.csv")
+hair_dryer_scores=merge(cleaned_hair_dryer,clean_hair_dryer_scores,by="review_id")
+microwave_scores=merge(cleaned_microwave,clean_microwave_scores,by="review_id")
+pacifier_scores=merge(cleaned_pacifier,clean_pacifier_scores,by="review_id")
+```
 
