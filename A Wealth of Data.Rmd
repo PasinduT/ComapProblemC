@@ -7,6 +7,9 @@ Author:
 library(tidyverse)
 library(stringr)
 library(lubridate)
+library(MASS)
+library(corrplot)
+library(patchwork)
 ```
 
 
@@ -82,5 +85,70 @@ clean_pacifier_scores <- read_csv("clean_pacifier_scores.csv")
 hair_dryer_scores=merge(cleaned_hair_dryer,clean_hair_dryer_scores,by="review_id")
 microwave_scores=merge(cleaned_microwave,clean_microwave_scores,by="review_id")
 pacifier_scores=merge(cleaned_pacifier,clean_pacifier_scores,by="review_id")
+
+
+
+unclean_hair_dryer <- read_csv("unclean_hair_dryer.csv", 
+    col_types = cols(X1 = col_skip()))
+
+unclean_microwave <- read_csv("unclean_microwave.csv", 
+    col_types = cols(X1 = col_skip()))
+unclean_pacifier <- read_csv("unclean_pacifier.csv", 
+    col_types = cols(X1 = col_skip()))
+
+
+hair_dryer_scores=merge(hair_dryer_scores,unclean_hair_dryer,by="review_id")
+microwave_scores=merge(microwave_scores,unclean_microwave,by="review_id")
+pacifier_scores=merge(pacifier_scores,unclean_pacifier,by="review_id")
+
+
+
+```
+
+
+```{r}
+star_compous_cor=cor(hair_dryer_scores$star_rating.x,hair_dryer_scores$compound)
+cor(hair_dryer_scores$star_rating.x[hair_dryer_scores$star_rating.x>3],hair_dryer_scores$compound[hair_dryer_scores$star_rating.x>3] )
+star_compous_cor
+cor(hair_dryer_scores$star_rating.x[hair_dryer_scores$star_rating.x<3],hair_dryer_scores$compound[hair_dryer_scores$star_rating.x<3] )
+cor(hair_dryer_scores$star_rating.x[hair_dryer_scores$star_rating.x==3],hair_dryer_scores$compound[hair_dryer_scores$star_rating.x==3] )
+```
+
+boxplot
+```{r}
+ggplot(data=hair_dryer_scores) +geom_boxplot(mapping=aes(x=star_rating.x, y=compound,group=star_rating.x))+ggtitle("hair dryer")+
+ggplot(data=microwave_scores) +geom_boxplot(mapping=aes(x=star_rating.x, y=compound,group=star_rating.x))+ggtitle("microwave")+
+ggplot(data=pacifier_scores) +geom_boxplot(mapping=aes(x=star_rating.x, y=compound,group=star_rating.x))+ggtitle("pacifier")
+```
+
+
+```{r}
+ggplot(data=hair_dryer_scores) +geom_boxplot(mapping=aes(x=star_rating.x, y=compound_unclean,group=star_rating.x))+ggtitle("hair dryer")+
+ggplot(data=microwave_scores) +geom_boxplot(mapping=aes(x=star_rating.x, y=compound_unclean,group=star_rating.x))+ggtitle("microwave")+
+ggplot(data=pacifier_scores) +geom_boxplot(mapping=aes(x=star_rating.x, y=compound_unclean,group=star_rating.x))+ggtitle("pacifier")
+```
+
+
+```{r}
+par(mfrow=c(1,2))
+boxplot(hair_dryer_scores$star_rating.x)
+boxplot(hair_dryer_scores$compound)
+```
+Data cleaning 
+```{r}
+hair_dryer_scores = hair_dryer_scores %>% dplyr::select(-star_rating.x,-X1) %>% dplyr::rename(star_rating =star_rating.y)
+
+microwave_scores = microwave_scores %>% dplyr::select(-star_rating.x,-X1) %>% dplyr::rename(star_rating =star_rating.y)
+
+pacifier_scores = pacifier_scores %>% dplyr::select(-star_rating.x,-X1) %>% dplyr::rename(star_rating =star_rating.y)
+```
+
+
+```{r}
+names(hair_dryer_scores)
+```
+
+```{r}
+
 ```
 
