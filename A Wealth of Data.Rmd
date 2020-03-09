@@ -12,6 +12,7 @@ library(corrplot)
 library(patchwork)
 library(rpart)
 library(caret)
+library(randomForest)
 ```
 
 
@@ -74,6 +75,29 @@ geom_smooth(data=subset(copyKVClimate, year ==1950))+geom_smooth(data=subset(cop
   
 product1= cleaned_microwave %>% filter(product_parent==423421857)
 ggplot(data=product1, mapping=aes(x=as.factor(month),group=star_rating,  color=as.factor(star_rating))) + geom_line(stat="count")+geom_point(stat="count")+facet_wrap(product1$year)
+
+
+```
+```{r}
+cleaned_microwave %>% filter(year>=2014 ) %>%
+ggplot(mapping=aes(x=as.factor(month),group=star_rating,  color=as.factor(star_rating))) + geom_line(stat="count")+geom_point(stat="count") +facet_wrap(~year)
+
+
+regression_data=cleaned_microwave %>% filter(year>=2014 ) %>% group_by(review_date) %>% summarize(number=n())
+regression_data
+
+
+a=cleaned_microwave %>% filter(year==2014) %>% group_by(star_rating) %>% summarize(n())
+a
+new_some=hair_dryer_scores %>% group_by(product_id,product_parent) %>% summarize(n())
+new_some
+aa=new_some %>% group_by(product_parent) %>% summarize(sum(n()))
+aa
+
+```
+
+y1=lm(y=regression_data$star_rating[regression_data$star_rating==1]~))
+
 ```
  %>% ggplot(mapping=aes(x=month, y= count ), color=as.factor(star_rating))+ geom_line()
  
@@ -371,6 +395,13 @@ table(hair_dryer_scores_words$star_rating,hair_dryer_scores_words$great)
 hair_dryer_scores_words$perfect[hair_dryer_scores_words$perfect==T]
 ```
 ```{r}
-model=rpart(star_rating~perfect,data=hair_dryer_scores_words)
+rfx=hair_dryer_scores_words %>% dplyr::select(perfect,great, awesome, super, powerful, bad, noisy, hard, disappointed, difficult)
+rf.x.numeric=as.factor(rfx$perfect)
+rf.y=hair_dryer_scores_words %>% dplyr::select(star_rating)
+rf.y
+aaa=data.frame(as.integer(rf.x))
+bbb=data.frame(as.factor(rf.y))
+fit.rf=randomForest(x=aaa, y=rf.y)
+text(model, digits = 3)
 ```
 
