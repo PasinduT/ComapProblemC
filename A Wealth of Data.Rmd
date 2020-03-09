@@ -131,8 +131,9 @@ ggplot(data=pacifier_scores) +geom_boxplot(mapping=aes(x=star_rating.x, y=compou
 
 ```{r}
 par(mfrow=c(1,2))
-boxplot(hair_dryer_scores$star_rating.x)
+boxplot(hair_dryer_scores$star_rating)
 boxplot(hair_dryer_scores$compound)
+summary(hair_dryer_scores$compound)
 ```
 Data cleaning 
 ```{r}
@@ -154,8 +155,189 @@ compound < -0.5 == negative
 ```{r}
 
 
-hair_dryer_scores %>% mutate(compound_factor== )
+hair_dryer_scores$nps=cut(hair_dryer_scores$compound, breaks=c(-1,-0.05,0.05,1), labels = c("negative","neutral","positive"))
+
+microwave_scores$nps=cut(microwave_scores$compound, breaks=c(-1,-0.05,0.05,1), labels = c("negative","neutral","positive"))
+
+
+pacifier_scores$nps=cut(pacifier_scores$compound, breaks=c(-1,-0.05,0.05,1), labels = c("negative","neutral","positive"))
+
+
+
+hair_dryer_scores$unclean_nps=cut(hair_dryer_scores$compound_unclean, breaks=c(-1,-0.2,0.05,1), labels = c("negative","neutral","positive"))
+
+microwave_scores$unclean_nps=cut(microwave_scores$compound_unclean, breaks=c(-1,-0.2,0.05,1), labels = c("negative","neutral","positive"))
+
+
+pacifier_scores$unclean_nps=cut(pacifier_scores$compound_unclean, breaks=c(-1,-0.2,0.05,1), labels = c("negative","neutral","positive"))
+
+
 
 
 ```
+
+
+```{r}
+#table(hair_dryer_scores$star_rating, hair_dryer_scores$nps)
+par(mfrow=c(1,3))
+table(hair_dryer_scores$star_rating, hair_dryer_scores$unclean_nps)
+table(microwave_scores$star_rating, microwave_scores$unclean_nps)
+table(pacifier_scores$star_rating, pacifier_scores$unclean_nps)
+
+
+par(mfrow=c(1,3))
+hair_table=table(hair_dryer_scores$star_rating, hair_dryer_scores$nps)
+microwave_table=table(microwave_scores$star_rating, microwave_scores$nps)
+pacifier_table=table(pacifier_scores$star_rating, pacifier_scores$nps)
+
+hair_table
+microwave_table
+pacifier_table
+```
+Chi squared test (to check if rows and columns are dependent or not)
+```{r}
+chisq.test(hair_table)
+chisq.test(microwave_table)
+chisq.test(pacifier_table)
+```
+There is a relationship between review and star rating 
+
+
+
+```{r}
+some_y_microwave=microwave_scores %>% filter(verified_purchase== "Y") %>% group_by(star_rating) %>% summarize(sum(helpful_votes), sum(total_votes), sum(star_rating),sum(helpful_votes)/sum(total_votes)) 
+some_n_microwave=microwave_scores %>% filter(verified_purchase=="N") %>% group_by(star_rating) %>% summarize(sum(helpful_votes), sum(total_votes), sum(star_rating),sum(helpful_votes)/sum(total_votes)) 
+
+some_y_pacifier=pacifier_scores %>% filter(verified_purchase=="Y") %>% group_by(star_rating) %>% summarize(sum(helpful_votes), sum(total_votes), sum(star_rating),sum(helpful_votes)/sum(total_votes)) 
+some_n_pacifier=pacifier_scores %>% filter(verified_purchase=="N") %>% group_by(star_rating) %>% summarize(sum(helpful_votes), sum(total_votes), sum(star_rating),sum(helpful_votes)/sum(total_votes)) 
+```
+
+
+```{r}
+some_y_hair=hair_dryer_scores %>% filter(verified_purchase== "Y") %>% group_by(star_rating) %>% summarize(sum(helpful_votes), sum(total_votes), sum(star_rating),sum(helpful_votes)/sum(total_votes)) 
+
+some_y_hair
+
+```
+```{r}
+
+some_n_hair=hair_dryer_scores %>% filter(verified_purchase=="N") %>% group_by(star_rating) %>% summarize(sum(helpful_votes), sum(total_votes), sum(star_rating),sum(helpful_votes)/sum(total_votes)) 
+some_n_hair
+```
+
+```{r}
+total_hair=hair_dryer_scores %>% group_by(star_rating) %>% summarize(sum(helpful_votes), sum(total_votes), sum(star_rating),sum(helpful_votes)/sum(total_votes)) 
+total_hair
+```
+hair
+```{r}
+helpful_verified_hair=cbind(some_y_hair$`sum(helpful_votes)`,some_n_hair$`sum(helpful_votes)`)
+colnames(helpful_verified_hair)<-c("Y","N")
+rownames(helpful_verified_hair)=c("1","2","3","4","5")
+helpful_verified_hair
+helpful_verified_hair
+
+prop.test(x=helpful_verified_hair[1,], n=c(sum(helpful_verified_hair[1,]),sum(helpful_verified_hair[1,])))
+prop.test(x=helpful_verified_hair[2,], n=c(sum(helpful_verified_hair[2,]),sum(helpful_verified_hair[2,])))
+prop.test(x=helpful_verified_hair[3,], n=c(sum(helpful_verified_hair[3,]),sum(helpful_verified_hair[3,])))
+prop.test(x=helpful_verified_hair[4,], n=c(sum(helpful_verified_hair[4,]),sum(helpful_verified_hair[4,])))
+prop.test(x=helpful_verified_hair[5,], n=c(sum(helpful_verified_hair[5,]),sum(helpful_verified_hair[5,])))
+```
+there is difference between Y and N's proprtion in star_rate 2,3,4,5  
+there is no difference between Y and N's proprtion in star_rate 1 
+
+```{r}
+helpful_verified_hair=cbind(some_y_hair$`sum(helpful_votes)`,some_n_hair$`sum(helpful_votes)`)
+colnames(helpful_verified_hair)<-c("Y","N")
+rownames(helpful_verified_hair)=c("1","2","3","4","5")
+helpful_verified_hair
+helpful_verified_hair
+
+prop.test(x=helpful_verified_hair[1,], n=c(sum(helpful_verified_hair[1,]),sum(helpful_verified_hair[1,])))
+prop.test(x=helpful_verified_hair[2,], n=c(sum(helpful_verified_hair[2,]),sum(helpful_verified_hair[2,])))
+prop.test(x=helpful_verified_hair[3,], n=c(sum(helpful_verified_hair[3,]),sum(helpful_verified_hair[3,])))
+prop.test(x=helpful_verified_hair[4,], n=c(sum(helpful_verified_hair[4,]),sum(helpful_verified_hair[4,])))
+prop.test(x=helpful_verified_hair[5,], n=c(sum(helpful_verified_hair[5,]),sum(helpful_verified_hair[5,])))
+```
+
+
+```{r}
+helpful_verified_microwave=cbind(some_y_microwave$`sum(helpful_votes)`,some_n_microwave$`sum(helpful_votes)`)
+colnames(helpful_verified_microwave)<-c("Y","N")
+rownames(helpful_verified_microwave)=c("1","2","3","4","5")
+helpful_verified_microwave
+helpful_verified_microwave
+
+prop.test(x=helpful_verified_microwave[1,], n=c(sum(helpful_verified_microwave[1,]),sum(helpful_verified_microwave[1,])))
+prop.test(x=helpful_verified_microwave[2,], n=c(sum(helpful_verified_microwave[2,]),sum(helpful_verified_microwave[2,])))
+prop.test(x=helpful_verified_microwave[3,], n=c(sum(helpful_verified_microwave[3,]),sum(helpful_verified_microwave[3,])))
+prop.test(x=helpful_verified_microwave[4,], n=c(sum(helpful_verified_microwave[4,]),sum(helpful_verified_microwave[4,])))
+prop.test(x=helpful_verified_microwave[5,], n=c(sum(helpful_verified_microwave[5,]),sum(helpful_verified_microwave[5,])))
+```
+```{r}
+helpful_verified_pacifier=cbind(some_y_pacifier$`sum(helpful_votes)`,some_n_pacifier$`sum(helpful_votes)`)
+colnames(helpful_verified_pacifier)<-c("Y","N")
+rownames(helpful_verified_pacifier)=c("1","2","3","4","5")
+helpful_verified_pacifier
+helpful_verified_pacifier
+
+prop.test(x=helpful_verified_pacifier[1,], n=c(sum(helpful_verified_pacifier[1,]),sum(helpful_verified_pacifier[1,])))
+prop.test(x=helpful_verified_pacifier[2,], n=c(sum(helpful_verified_pacifier[2,]),sum(helpful_verified_pacifier[2,])))
+prop.test(x=helpful_verified_pacifier[3,], n=c(sum(helpful_verified_pacifier[3,]),sum(helpful_verified_pacifier[3,])))
+prop.test(x=helpful_verified_pacifier[4,], n=c(sum(helpful_verified_pacifier[4,]),sum(helpful_verified_pacifier[4,])))
+prop.test(x=helpful_verified_pacifier[5,], n=c(sum(helpful_verified_pacifier[5,]),sum(helpful_verified_pacifier[5,])))
+```
+
+
+
+```{r}
+helpful_verified
+```
+
+```{r}
+a=hair_dryer_scores %>% group_by(product_id) %>% summarize(n())
+new_some=hair_dryer_scores %>% group_by(product_id,product_parent) %>% summarize(n())
+new_some
+aa=new_some %>% group_by(product_parent) %>% summarize(sum(n()))
+aa
+length(new_some$product_parent)
+length(unique(new_some$product_parent))
+```
+
+```{r}
+p1=hair_dryer_scores %>% group_by(product_parent) %>% summarize(number=n()) %>% filter(number>200)
+hair_dryer_scores %>% filter( product_parent %in% p1$product_parent) %>% filter(year>2010) %>% 
+ggplot(mapping=aes(x=as.factor(year),group=1)) +geom_point(stat="count")+geom_line(stat="count") +facet_wrap(~product_parent)
+
+p2=microwave_scores %>% group_by(product_parent) %>% summarize(number=n()) %>% filter(number>70)
+microwave_scores %>% filter( product_parent %in% p2$product_parent) %>% filter(year>2010) %>% 
+ggplot(mapping=aes(x=as.factor(year),group=1)) +geom_point(stat="count")+geom_line(stat="count") +facet_wrap(~product_parent)
+
+smicrowave_scores %>% group_by(product_parent) %>% summarize(number=n())
+
+p3=pacifier_scores %>% group_by(product_parent) %>% summarize(number=n()) %>% filter(number>200)
+pacifier_scores %>% filter( product_parent %in% p3$product_parent) %>% filter(year>2010) %>% 
+ggplot(mapping=aes(x=as.factor(year),group=1)) +geom_point(stat="count")+geom_line(stat="count") +facet_wrap(~product_parent)
+```
+
+
+```{r}
+adjectives_microwave <- read_csv("adjectives_microwave.csv")
+adjectives_hair_dryer <- read_csv("adjectives_hair_dryer.csv", 
+    col_types = cols(X1 = col_skip()))
+adjectives_pacifier <- read_csv("adjectives_pacifier.csv", 
+    col_types = cols(X1 = col_skip()))
+```
+
+```{r}
+View(adjectives_microwave %>% filter(count>100))
+View(adjectives_microwave %>% filter(count<100))
+
+View(adjectives_hair_dryer %>% filter(count>100))
+View(adjectives_hair_dryer %>% filter(count<100))
+
+View(adjectives_pacifier %>% filter(count>100))
+View(adjectives_pacifier %>% filter(count<100))
+```
+
 
