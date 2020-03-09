@@ -10,6 +10,8 @@ library(lubridate)
 library(MASS)
 library(corrplot)
 library(patchwork)
+library(rpart)
+library(caret)
 ```
 
 
@@ -340,4 +342,35 @@ View(adjectives_pacifier %>% filter(count>100))
 View(adjectives_pacifier %>% filter(count<100))
 ```
 
+```{r}
+hair_dryer_words <- read_csv("hair_dryer_words.csv", 
+    col_types = cols(X1 = col_skip()))
+
+microwave_words <- read_csv("microwave_words.csv", 
+    col_types = cols(X1 = col_skip()))
+
+pacifier_words <- read_csv("pacifier_words.csv", 
+    col_types = cols(X1 = col_skip()))
+
+```
+
+
+```{r}
+hair_dryer_scores_words=merge(hair_dryer_scores,hair_dryer_words,by="review_id")
+microwave_scores_words=merge(microwave_scores,microwave_words,by="review_id")
+pacifier_scores_words=merge(pacifier_scores,pacifier_words,by="review_id")
+View(hair_dryer_scores_words)
+
+
+table(hair_dryer_scores_words$star_rating,hair_dryer_scores_words$perfect)
+table(hair_dryer_scores_words$star_rating,hair_dryer_scores_words$great)
+```
+
+
+```{r}
+hair_dryer_scores_words$perfect[hair_dryer_scores_words$perfect==T]
+```
+```{r}
+model=rpart(star_rating~perfect,data=hair_dryer_scores_words)
+```
 
